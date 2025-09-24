@@ -1,0 +1,87 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f7f7f7;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  padding: 20px;
+  max-width: 800px;
+  margin: auto;
+}
+
+h2 {
+  text-align: center;
+}
+
+input,
+select,
+button {
+  padding: 5px;
+  font-size: 14px;
+}
+
+input,
+select {
+  margin: 5px 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+.search-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 10px;
+}
+
+.user-table th,
+.user-table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
+}
+
+.user-table th {
+  background-color: #eee;
+}
+
+.form-container {
+  background-color: #fff;
+  padding: 15px;
+  border: 1px solid #ccc;
+  margin-top: 20px;
+}
+
+.form-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.error {
+  color: red;
+  margin-bottom: 5px;
+}
