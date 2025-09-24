@@ -86,7 +86,6 @@ function App() {
     }
   };
 
-  // 🔹 Apply search
   let filteredUsers = users.filter(
     (user) =>
       user.name.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -94,7 +93,6 @@ function App() {
       user.department.toLowerCase().includes(searchText.toLowerCase())
   );
 
-  // 🔹 Apply filters
   filteredUsers = filteredUsers.filter((user) => {
     return (
       (!filters.firstName ||
@@ -112,7 +110,6 @@ function App() {
     );
   });
 
-  // 🔹 Sorting
   if (sortConfig.key) {
     filteredUsers.sort((a, b) => {
       const aValue = a[sortConfig.key].toLowerCase();
@@ -123,7 +120,6 @@ function App() {
     });
   }
 
-  // 🔹 Pagination
   const startIndex = (page - 1) * perPage;
   const paginatedUsers = filteredUsers.slice(startIndex, startIndex + perPage);
 

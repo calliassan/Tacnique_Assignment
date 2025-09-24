@@ -73,7 +73,6 @@
   margin-bottom: 10px;
 }
 
-/* Responsive: Convert table to cards */
 @media (max-width: 600px) {
   .user-table,
   .user-table thead,
