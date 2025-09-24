@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 
 function UserForm({ user, onSave, onCancel }) {
-  const [formData, setFormData] = useState(user);
+  const [formData, setFormData] = useState(
+    user || { name: "", email: "", department: "" }
+  );
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
@@ -23,30 +25,38 @@ function UserForm({ user, onSave, onCancel }) {
   };
 
   return (
-    <div className="form-container">
-      <h3>{formData.id ? "Edit User" : "Add User"}</h3>
-      {error && <p className="error">{error}</p>}
-      <input
-        name="name"
-        placeholder="Name"
-        value={formData.name}
-        onChange={handleChange}
-      />
-      <input
-        name="email"
-        placeholder="Email"
-        value={formData.email}
-        onChange={handleChange}
-      />
-      <input
-        name="department"
-        placeholder="Department"
-        value={formData.department}
-        onChange={handleChange}
-      />
-      <div className="form-actions">
-        <button onClick={handleSave}>Save</button>
-        <button onClick={onCancel}>Cancel</button>
+    <div className="popup-overlay">
+      <div className="popup">
+        <h3>{formData.id ? "Edit User" : "Add User"}</h3>
+        {error && <p className="error">{error}</p>}
+
+        <input
+          name="name"
+          placeholder="Name"
+          value={formData.name}
+          onChange={handleChange}
+        />
+        <input
+          name="email"
+          placeholder="Email"
+          value={formData.email}
+          onChange={handleChange}
+        />
+        <input
+          name="department"
+          placeholder="Department"
+          value={formData.department}
+          onChange={handleChange}
+        />
+
+        <div className="popup-actions">
+          <button type="button" onClick={handleSave}>
+            Save
+          </button>
+          <button type="button" onClick={onCancel}>
+            Cancel
+          </button>
+        </div>
       </div>
     </div>
   );

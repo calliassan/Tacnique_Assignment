@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./App.css";
-import UserForm from "./components/userform";
-import UserTable from "./components/usertable";
 import SearchBar from "./components/searchbar";
+import UserTable from "./components/usertable";
+import FilterPopup from "./components/filter";
+import UserForm from "./components/userform";
 
 function App() {
   const [users, setUsers] = useState([]);
@@ -13,17 +14,30 @@ function App() {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [errorMessage, setErrorMessage] = useState("");
+  const [showFilter, setShowFilter] = useState(false);
+  const [filters, setFilters] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    department: "",
+  });
+  const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
 
   useEffect(() => {
     axios
       .get("https://jsonplaceholder.typicode.com/users")
       .then((res) => {
-        const userList = res.data.map((user) => ({
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          department: user.company ? user.company.name : "",
-        }));
+        const userList = res.data.map((user) => {
+          const [firstName, ...lastNameParts] = user.name.split(" ");
+          return {
+            id: user.id,
+            firstName,
+            lastName: lastNameParts.join(" "),
+            name: user.name,
+            email: user.email,
+            department: user.company ? user.company.name : "",
+          };
+        });
         setUsers(userList);
       })
       .catch(() => setErrorMessage("Failed to fetch users"));
@@ -61,6 +75,9 @@ function App() {
         .post("https://jsonplaceholder.typicode.com/users", user)
         .then((res) => {
           user.id = res.data.id || users.length + 1;
+          const [firstName, ...lastNameParts] = user.name.split(" ");
+          user.firstName = firstName;
+          user.lastName = lastNameParts.join(" ");
           setUsers([...users, user]);
           setShowForm(false);
           setErrorMessage("");
@@ -69,15 +86,44 @@ function App() {
     }
   };
 
-  // Filter users based on search text
-  const filteredUsers = users.filter(
+  // 🔹 Apply search
+  let filteredUsers = users.filter(
     (user) =>
       user.name.toLowerCase().includes(searchText.toLowerCase()) ||
       user.email.toLowerCase().includes(searchText.toLowerCase()) ||
       user.department.toLowerCase().includes(searchText.toLowerCase())
   );
 
-  // Paginate users
+  // 🔹 Apply filters
+  filteredUsers = filteredUsers.filter((user) => {
+    return (
+      (!filters.firstName ||
+        user.firstName
+          .toLowerCase()
+          .includes(filters.firstName.toLowerCase())) &&
+      (!filters.lastName ||
+        user.lastName.toLowerCase().includes(filters.lastName.toLowerCase())) &&
+      (!filters.email ||
+        user.email.toLowerCase().includes(filters.email.toLowerCase())) &&
+      (!filters.department ||
+        user.department
+          .toLowerCase()
+          .includes(filters.department.toLowerCase()))
+    );
+  });
+
+  // 🔹 Sorting
+  if (sortConfig.key) {
+    filteredUsers.sort((a, b) => {
+      const aValue = a[sortConfig.key].toLowerCase();
+      const bValue = b[sortConfig.key].toLowerCase();
+      if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
+      if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
+      return 0;
+    });
+  }
+
+  // 🔹 Pagination
   const startIndex = (page - 1) * perPage;
   const paginatedUsers = filteredUsers.slice(startIndex, startIndex + perPage);
 
@@ -92,6 +138,7 @@ function App() {
         perPage={perPage}
         setPerPage={setPerPage}
         onAdd={handleAddUser}
+        onFilter={() => setShowFilter(true)}
       />
 
       <UserTable
@@ -102,6 +149,8 @@ function App() {
         perPage={perPage}
         onEdit={handleEditUser}
         onDelete={handleDeleteUser}
+        onSort={setSortConfig}
+        sortConfig={sortConfig}
       />
 
       {showForm && (
@@ -109,6 +158,14 @@ function App() {
           user={selectedUser}
           onSave={handleSaveUser}
           onCancel={() => setShowForm(false)}
+        />
+      )}
+
+      {showFilter && (
+        <FilterPopup
+          filters={filters}
+          setFilters={setFilters}
+          onClose={() => setShowFilter(false)}
         />
       )}
     </div>
